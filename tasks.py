@@ -9,16 +9,15 @@ def deploy(ctx):
     base = os.path.expanduser(ctx.config.get('deploy.base', '~/www'))
     src = ctx.config.get('deploy.src', '.')
 
-    ctx.cd(base)
-
     # no source directory found − create it
     if not os.path.isdir(os.path.join(base, src)):
-        ctx.run('mkdir {}'.format(os.path.join(base, src)))
+        ctx.run('mkdir -p {}'.format(os.path.join(base, src)))
 
     # no repository found − clone it
     if not os.path.isdir(os.path.join(base, src, '.git')):
         repo_url = ctx.config['github.url']
-        ctx.run('git clone "{}" {}'.format(repo_url, src))
+        with ctx.cd(base):
+            ctx.run('git clone "{}" {}'.format(repo_url, src))
 
     with ctx.cd(os.path.join(base, src)):
         ctx.run('git fetch')
