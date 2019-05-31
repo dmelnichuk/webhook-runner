@@ -3,6 +3,7 @@ import json
 import os
 
 from bottle import request, response, run
+from invoke.context import Config, Context
 
 from config import app
 from tasks import deploy
@@ -21,18 +22,12 @@ def webhook():
         # check branch or tag
         follow = app.config.get('github.follow', 'branch')
         name = app.config.get('github.name', 'master')
-        payload = json.loads(body)
+        payload = json.loads(body.decode('utf-8'))
 
         # either 'refs/heads/<name>' or 'refs/tags/<name>'
         if payload['ref'].split('/')[-1] == name:
-            deploy(
-                name=name,
-                base=app.config.get(
-                    'github.base',
-                    os.path.expanduser('~/www')
-                ),
-                src=app.config.get('deploy.src', '.'),
-            )
+            config = Config(defaults=app.config)
+            deploy(Context(config))
     else:
         response.status_code = 401
 

@@ -4,7 +4,10 @@ from invoke import task
 
 
 @task
-def deploy(ctx, name, base, src):
+def deploy(ctx):
+    name = ctx.config.get('github.name', 'master')
+    base = ctx.config.get('github.base', os.path.expanduser('~/www'))
+    src = ctx.config.get('deploy.src', '.')
 
     with ctx.cd(os.path.join(base, src)):
         ctx.run('git fetch')
