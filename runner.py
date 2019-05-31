@@ -1,9 +1,8 @@
 import hmac
 import json
-import os
 
 from bottle import request, response, run
-from invoke.context import Config, Context
+from invoke.context import Context
 
 from config import app
 from tasks import deploy
@@ -20,14 +19,14 @@ def webhook():
     digest = hmac.new(secret, body, digestmod='sha1').hexdigest()
     if hmac.compare_digest(digest, signature):
         # check branch or tag
-        follow = app.config.get('github.follow', 'branch')
         name = app.config.get('github.name', 'master')
         payload = json.loads(body.decode('utf-8'))
 
         # either 'refs/heads/<name>' or 'refs/tags/<name>'
         if payload['ref'].split('/')[-1] == name:
-            config = Config(defaults=app.config)
-            deploy(Context(config))
+            ctx = Context()
+            ctx.config.update(app.config)
+            deploy(ctx)
     else:
         response.status_code = 401
 
