@@ -25,7 +25,7 @@ def deploy(ctx):
 
     if not os.path.isdir(os.path.join(base, 'env')):
         # TODO: automate it
-        print('Please create virtual environment and set up tasks!')
+        print('Please create virtual environment and set up services!')
 
     else:
         with ctx.cd(base):
