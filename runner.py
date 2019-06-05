@@ -54,8 +54,9 @@ def webhook():
     return json.dumps({})
 
 
-run(
-    app,
-    host=app.config.get('whrunner.host', '127.0.0.1'),
-    port=int(app.config.get('whrunner.port', '8080')),
-)
+if __name__ == '__main__':
+    run(
+        app,
+        host=app.config.get('whrunner.host', '127.0.0.1'),
+        port=int(app.config.get('whrunner.port', '8080')),
+    )
