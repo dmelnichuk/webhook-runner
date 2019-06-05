@@ -1,11 +1,23 @@
 import logging
 import os
+from typing import Callable
 
 from invoke import task
 from invoke.exceptions import Failure
 
 
 logger = logging.Logger(name=__name__)
+logger.parent = logger.root
+
+
+def hide_traceback(fn: Callable):
+    def wrapper(ctx, *args, **kwargs):
+        try:
+            fn(ctx, *args, **kwargs)
+        except Failure:
+            pass
+
+    return wrapper
 
 
 def run_and_log(ctx: 'Context', cmd: str, warn: bool = True) -> bool:
@@ -23,7 +35,7 @@ def run_and_log(ctx: 'Context', cmd: str, warn: bool = True) -> bool:
     """
     logger.info('Running command:\n{}'.format(cmd))
 
-    result = ctx.run(cmd, hide='both', echo=False, warn=False)
+    result = ctx.run(cmd, hide='both', echo=False, warn=True)
 
     if result.stdout:
         logger.info(result.stdout)
@@ -33,16 +45,20 @@ def run_and_log(ctx: 'Context', cmd: str, warn: bool = True) -> bool:
     if result.exited == 0:
         return True
     else:
-        logger.error('The last command failed!')
+        logger.error(
+            'The last command exited with status {}'.format(result.exited)
+        )
 
     if not warn:
         # generic exception, because logging was done already
+        logger.error('Delivery was stopped.')
         raise Failure(result)
 
     return False
 
 
 @task
+@hide_traceback
 def deploy(ctx):
     """ Deploy task. """
     name = ctx.config.get('github.name', 'master')

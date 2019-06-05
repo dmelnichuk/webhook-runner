@@ -10,6 +10,7 @@ from config import app
 from tasks import deploy
 
 
+logging.basicConfig(level=app.config.get('logging.level', 'DEBUG'))
 logger = logging.Logger(name=__name__)
 
 
@@ -45,6 +46,10 @@ def webhook():
     else:
         response.status = 401
         logger.error('Delivery was not authorized.')
+
+    ctx = Context()
+    ctx.config.update(app.config)
+    Thread(target=deploy, args=(ctx, )).start()
 
     return json.dumps({})
 
