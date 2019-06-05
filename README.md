@@ -33,7 +33,34 @@ file.
 
 ### 3. Write `config.ini`
 
-Refer to the `config.ini.example` file.
+Here is a run-down of its sections:
+
+#### `[whrunner]`
+- `host` − host address to bind. Default: '127.0.0.1',
+- `port` − port to listen to. Default: 8080.
+
+#### `[logging]`
+- `level` − level of logging messages. Most useful values are 'ERROR' and
+'INFO'.
+
+#### `[github]`
+- `name` − a name of the branch or tag to deliver. Default: 'master',
+- `secret` − webhook secret. Just a free-form string of characters,
+preferably random. See
+[GitHub documentation](https://developer.github.com/webhooks/creating/#setting-up-a-webhook)
+for further details,
+- `url` − URL ot the git repository.
+
+#### `[deploy]`
+- `base` − base path to the Django project folder, commonly referred to as
+`BASE_DIR`. May contain other directories (source, media, static, et c.).
+Home expansion (~) is allowed,
+- `src` − a relative path to the project's git source (the directory with
+`.git` directory inside). May be the same as base ('.'),
+- `scripts` − a directory where `manage.py` and other project-level scripts
+are stored. May be the same as base ('.').
+
+A `config.ini.example` file is included for your convenience.
 
 ### 4. Launch `runner.py` as a service
 
