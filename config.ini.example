@@ -1,6 +1,6 @@
 [whrunner]
 host=127.0.0.1
-port=8088
+port=8080
 
 [logging]
 level=INFO
@@ -11,5 +11,5 @@ secret=github-auth-secret
 url=git@github.com:dmelnichuk/fuzzy-lamp.git
 
 [deploy]
-base=~/ObeDog-Backend
+base=~/django-backend
 src=src
