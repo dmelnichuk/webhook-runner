@@ -29,20 +29,27 @@ def webhook():
         # check branch or tag
         name = app.config.get('github.name', 'master')
         payload = json.loads(body.decode('utf-8'))
-        logger.info('Delivery ID={}'.format(
-            request.headers.get('X-GitHub-Delivery', 'Unknown'))
-        )
-        # either 'refs/heads/<name>' or 'refs/tags/<name>'
-        pushed_name = payload['ref'].split('/')[-1]
-        logger.info('Name of a branch or a tag being pushed: {}'.format(
-            pushed_name
-        ))
-        if pushed_name == name:
-            ctx = Context()
-            ctx.config.update(app.config)
-            Thread(target=deploy, args=(ctx, )).start()
+
+        # check for hook creation event
+        zen = payload.get('zen', None)
+        if zen:
+            logger.info(zen)
         else:
-            logger.info('Skipping delivery.')
+            logger.info('Delivery ID={}'.format(
+                request.headers.get('X-GitHub-Delivery', 'Unknown'))
+            )
+            # either 'refs/heads/<name>' or 'refs/tags/<name>'
+            pushed_name = payload['ref'].split('/')[-1]
+            logger.info('Name of a branch or a tag being pushed: {}'.format(
+                pushed_name
+            ))
+            if pushed_name == name:
+                ctx = Context()
+                ctx.config.update(app.config)
+                Thread(target=deploy, args=(ctx, )).start()
+            else:
+                logger.info('Skipping delivery.')
+
     else:
         response.status = 401
         logger.error('Delivery was not authorized.')
