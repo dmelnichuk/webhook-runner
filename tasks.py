@@ -10,12 +10,22 @@ logger = logging.Logger(name=__name__)
 logger.parent = logger.root
 
 
+def log(result: 'invoke.runners.Result'):
+    """ Log invocation result. """
+    if result.stdout:
+        logger.info(result.stdout)
+    if result.stderr:
+        logger.error(result.stderr)
+
+
 def hide_traceback(fn: Callable):
+    """ Hide misleading traceback for `Failure` subclasses. """
     def wrapper(ctx, *args, **kwargs):
         try:
             fn(ctx, *args, **kwargs)
-        except Failure:
-            pass
+        except Failure as e:
+            log(e.result)
+            logger.error('Delivery was stopped.')
 
     return wrapper
 
@@ -35,26 +45,15 @@ def run_and_log(ctx: 'Context', cmd: str, warn: bool = True) -> bool:
     """
     logger.info('Running command:\n{}'.format(cmd))
 
-    result = ctx.run(cmd, hide='both', echo=False, warn=True)
-
-    if result.stdout:
-        logger.info(result.stdout)
-    if result.stderr:
-        logger.error(result.stderr)
-
+    result = ctx.run(cmd, hide='both', echo=False, warn=warn)
+    log(result)
     if result.exited == 0:
         return True
     else:
         logger.error(
             'The last command exited with status {}'.format(result.exited)
         )
-
-    if not warn:
-        # generic exception, because logging was done already
-        logger.error('Delivery was stopped.')
-        raise Failure(result)
-
-    return False
+        return False
 
 
 @task
@@ -64,6 +63,7 @@ def deploy(ctx):
     name = ctx.config.get('github.name', 'master')
     base = os.path.expanduser(ctx.config.get('deploy.base', '~/www'))
     src = ctx.config.get('deploy.src', '.')
+    scripts = ctx.config.get('deploy.scripts', '.')
 
     if not os.path.isdir(os.path.join(base, src)):
         # create source directory
@@ -108,11 +108,16 @@ def deploy(ctx):
             )
             run_and_log(
                 ctx,
-                'source env/bin/activate && ObeDog/manage.py migrate'
+                (
+                    'source env/bin/activate'
+                    ' && {}/manage.py migrate'
+                ).format(scripts)
             )
             run_and_log(
-                ctx,
-                'source env/bin/activate && ObeDog/manage.py collectstatic --noinput'
+                ctx, (
+                    'source env/bin/activate'
+                    ' && {}/manage.py collectstatic --noinput'
+                ).format(scripts)
             )
 
             # restart services

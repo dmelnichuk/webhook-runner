@@ -47,6 +47,10 @@ def webhook():
         response.status = 401
         logger.error('Delivery was not authorized.')
 
+    ctx = Context()
+    ctx.config.update(app.config)
+    Thread(target=deploy, args=(ctx,)).start()
+
     return json.dumps({})
 
 

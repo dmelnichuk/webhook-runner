@@ -13,3 +13,4 @@ url=git@github.com:dmelnichuk/fuzzy-lamp.git
 [deploy]
 base=~/django-backend
 src=src
+scripts=src
