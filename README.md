@@ -36,7 +36,7 @@ file.
 Here is a run-down of its sections:
 
 #### `[whrunner]`
-- `host` − host address to bind. Default: '127.0.0.1',
+- `host` − host address to bind to. Default: '127.0.0.1',
 - `port` − port to listen to. Default: 8080.
 
 #### `[logging]`
