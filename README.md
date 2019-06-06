@@ -86,3 +86,24 @@ Alternatively, you can use an app server that is already shipped with
 Please read the [GitHub
 documentation](https://developer.github.com/webhooks/creating/#setting-up-a-webhook)
 about webhook settings in general.
+
+## Customization
+
+### Tasks
+
+First thing you would wish to fine tune in Webhook Runner is the commands
+it runs. I have implemented a proven number of commands in `tasks` module.
+You may remove the ones you do not need, as well as add your own.
+
+Webhook Runner uses [Invoke](http://docs.pyinvoke.org/) task to carry on
+its delivery chores. Feel free to familiarize yourself with Invoke's
+documentation; it will serve you well if you decide on using
+[Fabric](https://www.fabfile.org/) sometime later. With Invoke you may run
+commands, perform authorization in CLI tools with passwords or
+certificates, create a chain of pre/post-tasks, and many other things.
+
+### Settings
+
+All contents of `config.ini` is sourced into Invoke context object (`ctx`)
+prior to running the `tasks.deploy()` in the form: `"section.key"`.
+You may add any sections and keys you need.
