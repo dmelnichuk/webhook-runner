@@ -77,5 +77,12 @@ Alternatively, you can use an app server that is already shipped with
 
 ### 5. Set up a webhook on GitHub
 
-[Setting up a
-webhook](https://developer.github.com/webhooks/creating/#setting-up-a-webhook).
+- “Payload URL” must end with `/webhook/` (note the trailing slash):
+
+  http://cd.example.com/webhook/
+
+- “Content type” must be “application/json”.
+
+Please read the [GitHub
+documentation](https://developer.github.com/webhooks/creating/#setting-up-a-webhook)
+about webhook settings in general.
