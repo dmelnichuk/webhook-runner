@@ -86,6 +86,7 @@ def deploy(ctx):
     with ctx.cd(os.path.join(base, src)):
         run_and_log(ctx, 'git fetch', warn=False)
         run_and_log(ctx, 'git checkout {}'.format(name), warn=False)
+        run_and_log(ctx, 'git pull', warn=False)
 
     if not os.path.isdir(os.path.join(base, 'env')):
         # TODO: automate it
