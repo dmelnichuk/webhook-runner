@@ -127,3 +127,14 @@ def deploy(ctx):
             run_and_log(ctx, 'sudo systemctl restart celery-beat.service')
 
     logger.info('Delivery is completed normally.')
+
+
+@task
+@hide_traceback
+def tag(ctx):
+    """ Sync tags. """
+    base = os.path.expanduser(ctx.config.get('deploy.base', '~/www'))
+    src = ctx.config.get('deploy.src', '.')
+
+    with ctx.cd(os.path.join(base, src)):
+        run_and_log(ctx, 'git fetch --tags', warn=False)
